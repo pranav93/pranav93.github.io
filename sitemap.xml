@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  
+  <url>
+    <loc>/blog/</loc>
+    <lastmod>2020-02-07T19:01:09+05:30</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/concurrency/</loc>
+    <lastmod>2020-02-07T19:01:09+05:30</lastmod>
+  </url>
+  
+  <url>
+    <loc>/blog/golang-fan-inout-pattern/</loc>
+    <lastmod>2020-02-07T19:01:09+05:30</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/fanin/</loc>
+    <lastmod>2020-02-07T19:01:09+05:30</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/fanout/</loc>
+    <lastmod>2020-02-07T19:01:09+05:30</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/golang/</loc>
+    <lastmod>2020-02-07T19:01:09+05:30</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/golang-channels/</loc>
+    <lastmod>2020-02-07T19:01:09+05:30</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/parallelism/</loc>
+    <lastmod>2020-02-07T19:01:09+05:30</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/</loc>
+    <lastmod>2020-02-07T19:01:09+05:30</lastmod>
+  </url>
+  
+  <url>
+    <loc>/blog/alembic-for-the-database-schema-migrations/</loc>
+    <lastmod>2019-11-09T19:01:09+05:30</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/database/</loc>
+    <lastmod>2019-11-09T19:01:09+05:30</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/migration/</loc>
+    <lastmod>2019-11-09T19:01:09+05:30</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/mysql/</loc>
+    <lastmod>2019-11-09T19:01:09+05:30</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/postgresql/</loc>
+    <lastmod>2019-11-09T19:01:09+05:30</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/python/</loc>
+    <lastmod>2019-11-09T19:01:09+05:30</lastmod>
+  </url>
+  
+  <url>
+    <loc>/blog/curious-case-of-mysql-and-emojis/</loc>
+    <lastmod>2018-08-05T19:01:09+05:30</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/emojis/</loc>
+    <lastmod>2018-08-05T19:01:09+05:30</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/encoding/</loc>
+    <lastmod>2018-08-05T19:01:09+05:30</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/utf8mb4/</loc>
+    <lastmod>2018-08-05T19:01:09+05:30</lastmod>
+  </url>
+  
+  <url>
+    <loc>/blog/pushing-stack-trace-of-error-on-slack-channel/</loc>
+    <lastmod>2016-11-13T19:01:09+05:30</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/traceback/</loc>
+    <lastmod>2016-11-13T19:01:09+05:30</lastmod>
+  </url>
+  
+  <url>
+    <loc>/about/</loc>
+    <lastmod>2014-04-09T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/</loc>
+    <lastmod>2014-04-09T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/</loc>
+  </url>
+  
+</urlset>

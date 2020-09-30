@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>parallelism on Pranav P. Ambhore</title>
+    <link>/tags/parallelism/</link>
+    <description>Recent content in parallelism on Pranav P. Ambhore</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <lastBuildDate>Fri, 07 Feb 2020 19:01:09 +0530</lastBuildDate><atom:link href="/tags/parallelism/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Fan In/Out Pattern In Golang</title>
+      <link>/blog/golang-fan-inout-pattern/</link>
+      <pubDate>Fri, 07 Feb 2020 19:01:09 +0530</pubDate>
+      
+      <guid>/blog/golang-fan-inout-pattern/</guid>
+      <description>Golang is absolutely gorgeous when it comes to concurrency. I was trying to implement fan in/out pattern in it. Following is the result.
+package main import &amp;#34;fmt&amp;#34; func main() { var numOfWorkers int // How many workers do you want? 	fmt.Printf(&amp;#34;Enter the number of workers to spawn : &amp;#34;) fmt.Scanf(&amp;#34;%d\n&amp;#34;, &amp;amp;numOfWorkers) c := make(chan int) outChanArr := make([]chan map[int]int, numOfWorkers) done := make(chan bool) collateChan := make(chan map[int]int) // generate some values 	go genFunc(c) for s := 0; s &amp;lt; numOfWorkers; s++ { // calculate the factorials 	outChanArr[s] = fact(c, done, s) } // collate results from all channels 	collateFunc(done, collateChan, outChanArr.</description>
+    </item>
+    
+  </channel>
+</rss>

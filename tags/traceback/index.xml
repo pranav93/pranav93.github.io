@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>traceback on Pranav P. Ambhore</title>
+    <link>/tags/traceback/</link>
+    <description>Recent content in traceback on Pranav P. Ambhore</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <lastBuildDate>Sun, 13 Nov 2016 19:01:09 +0530</lastBuildDate><atom:link href="/tags/traceback/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Pushing Error Traceback On Slack Channel In Python</title>
+      <link>/blog/pushing-stack-trace-of-error-on-slack-channel/</link>
+      <pubDate>Sun, 13 Nov 2016 19:01:09 +0530</pubDate>
+      
+      <guid>/blog/pushing-stack-trace-of-error-on-slack-channel/</guid>
+      <description>Wouldn&amp;rsquo;t it be awesome if we could get the error trace on slack. For this first of all we&amp;rsquo;ll have to write a handler that will compose the message the way slack likes.
+import logging import slackweb class SlackHandler(logging.Handler): def __init__(self, url, channel, username, icon_emoji): logging.Handler.__init__(self) self.slack_obj = slackweb.Slack(url=url) self.channel = channel self.username = username self.icon_emoji = icon_emoji def emit(self, record): self.slack_obj.notify( text=record.exc_text or record.msg, channel=&amp;#34;#{}&amp;#34;.format(self.channel), username=self.username, icon_emoji=self.icon_emoji ) # Usage: Add handler as, # &amp;#39;slack_jabber&amp;#39;: { # &amp;#39;class&amp;#39;: &amp;#39;SlackHandler&amp;#39;, # &amp;#39;url&amp;#39;: &amp;#39;https://hooks.</description>
+    </item>
+    
+  </channel>
+</rss>

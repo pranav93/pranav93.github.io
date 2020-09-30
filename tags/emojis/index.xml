@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>emojis on Pranav P. Ambhore</title>
+    <link>/tags/emojis/</link>
+    <description>Recent content in emojis on Pranav P. Ambhore</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <lastBuildDate>Sun, 05 Aug 2018 19:01:09 +0530</lastBuildDate><atom:link href="/tags/emojis/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Curious Case Of Mysql And Emojis</title>
+      <link>/blog/curious-case-of-mysql-and-emojis/</link>
+      <pubDate>Sun, 05 Aug 2018 19:01:09 +0530</pubDate>
+      
+      <guid>/blog/curious-case-of-mysql-and-emojis/</guid>
+      <description>I was working on emoji support of legacy application written in Python with MySQL as database. And I was unable to save emojis on it, though encoding was perfect i.e. UTF8 (Or I though it was 😂). Turns out I was wrong.
+After going through docs of mysql, which were explaining encoding UTF8, I was amused to see that it in fact only supports 3 bytes for a character. And emojis, well they take 4 bytes.</description>
+    </item>
+    
+  </channel>
+</rss>

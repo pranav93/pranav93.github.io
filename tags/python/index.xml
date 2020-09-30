@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>python on Pranav P. Ambhore</title>
+    <link>/tags/python/</link>
+    <description>Recent content in python on Pranav P. Ambhore</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <lastBuildDate>Sat, 09 Nov 2019 19:01:09 +0530</lastBuildDate><atom:link href="/tags/python/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Alembic For The Database Schema Migrations</title>
+      <link>/blog/alembic-for-the-database-schema-migrations/</link>
+      <pubDate>Sat, 09 Nov 2019 19:01:09 +0530</pubDate>
+      
+      <guid>/blog/alembic-for-the-database-schema-migrations/</guid>
+      <description>Using just sql scripts for managing database schema migrations is alright. But in that case we have to explicitly create a system where we have to keep track of the sequences of the scripts (one of the reasons: foreign key dependencies). While in development environment, if we want to check whether existing function/method code compatible with earlier table schema, we have to manually write some commands in our favorite db client.</description>
+    </item>
+    
+    <item>
+      <title>Pushing Error Traceback On Slack Channel In Python</title>
+      <link>/blog/pushing-stack-trace-of-error-on-slack-channel/</link>
+      <pubDate>Sun, 13 Nov 2016 19:01:09 +0530</pubDate>
+      
+      <guid>/blog/pushing-stack-trace-of-error-on-slack-channel/</guid>
+      <description>Wouldn&amp;rsquo;t it be awesome if we could get the error trace on slack. For this first of all we&amp;rsquo;ll have to write a handler that will compose the message the way slack likes.
+import logging import slackweb class SlackHandler(logging.Handler): def __init__(self, url, channel, username, icon_emoji): logging.Handler.__init__(self) self.slack_obj = slackweb.Slack(url=url) self.channel = channel self.username = username self.icon_emoji = icon_emoji def emit(self, record): self.slack_obj.notify( text=record.exc_text or record.msg, channel=&amp;#34;#{}&amp;#34;.format(self.channel), username=self.username, icon_emoji=self.icon_emoji ) # Usage: Add handler as, # &amp;#39;slack_jabber&amp;#39;: { # &amp;#39;class&amp;#39;: &amp;#39;SlackHandler&amp;#39;, # &amp;#39;url&amp;#39;: &amp;#39;https://hooks.</description>
+    </item>
+    
+  </channel>
+</rss>

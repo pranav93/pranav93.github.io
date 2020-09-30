@@ -1,0 +1,773 @@
+<!doctype html>
+<html lang="">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Alembic For The Database Schema Migrations - Pranav P. Ambhore</title>
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name="referrer" content="no-referrer">
+    <meta name="description" content="">
+    <meta property="og:site_name" content="Pranav P. Ambhore" />
+    <meta property="og:locale" content="nn_NO" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="/blog/alembic-for-the-database-schema-migrations/" />
+    <meta property="og:title" content="Alembic For The Database Schema Migrations" />
+    <meta property="og:image" content="//p.jpg" />
+    <meta property="og:description" content="" />
+
+    
+
+    <meta property="twitter:title" content="Alembic For The Database Schema Migrations" />
+    <meta property="twitter:image" content="//p.jpg" />
+    <meta property="twitter:card" content="summary" />
+    <meta property="twitter:description" content="" />
+
+    
+
+    <link rel="canonical" href="/blog/alembic-for-the-database-schema-migrations/">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="/css/main.css" />
+
+    
+        <link rel="stylesheet" href="/css/highlight.css" />
+    
+
+    
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/progressively/1.2.5/progressively.min.css" integrity="sha256-xbqLYBMsjpuCihs+3Fgp/MFMtPdo2SWKoOjEWOqR4X0=" crossorigin="anonymous" />
+    
+
+    <link rel="shortcut icon"
+          href="https://gokmengorgen.net/img/laughing-man-favicon.png">
+
+    <link href='' rel="alternate" type="application/rss+xml" title="Pranav P. Ambhore" />
+    <link href="https://fonts.googleapis.com/css?family=Fira+Code|Merriweather+Sans:400,700|Merriweather:400,700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    
+    
+
+    
+
+    
+
+<div class="my-4 my-md-5 header">
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-87284198-1"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', "UA-87284198-1");
+    ga('create', "UA-87284198-1", 'auto');
+    ga('send', 'pageview');
+
+    </script>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-auto d-none d-md-block">
+                
+                    <a href="/">
+                        <img class="logo" src="/p.jpg" alt="logo">
+                    </a>
+                
+            </div>
+            <div class="col-auto align-self-center mr-auto">
+                <a href="/">
+                    <h1 class="font-weight-bold name">
+                        Pranav P. Ambhore
+                    </h1>
+                </a>
+
+                <ul class="nav nav-primary">
+                    
+                        <li class="nav-item">
+                            <a class="text-uppercase nav-link text-blog" href="/blog/">
+                                
+                                Blog
+                            </a>
+                        </li>
+                    
+                        <li class="nav-item">
+                            <a class="text-uppercase nav-link text-about" href="/about/">
+                                
+                                About
+                            </a>
+                        </li>
+                    
+
+                    
+                </ul>
+
+                <ul class="nav nav-secondary">
+                    
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <div class="content">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div
+                    
+                    class="col-sm-12 col-md-9"
+                    
+                >
+                    <h1 class="mx-0 mx-md-4">
+                        Alembic For The Database Schema Migrations
+                    </h1>
+
+                    <div class="mb-4 mb-md-5 meta">
+                        <span class="date" title='Sat Nov 9 2019 19:01:09 &#43;0530'>
+                            November 09, 2019
+                        </span>
+
+                        
+                            
+                        
+
+                        <span class="reading-time middot">
+                            9 minutes
+                        </span>
+
+                        <div class="d-none d-md-inline tags">
+                            <ul class="list-unstyled d-inline">
+                                
+                                    <li class="d-inline middot">
+                                        <a href="/tags/mysql">mysql</a>
+                                    </li>
+                                
+                                    <li class="d-inline middot">
+                                        <a href="/tags/postgresql">postgresql</a>
+                                    </li>
+                                
+                                    <li class="d-inline middot">
+                                        <a href="/tags/database">database</a>
+                                    </li>
+                                
+                                    <li class="d-inline middot">
+                                        <a href="/tags/python">python</a>
+                                    </li>
+                                
+                                    <li class="d-inline middot">
+                                        <a href="/tags/migration">migration</a>
+                                    </li>
+                                
+                            </ul>
+                        </div>
+
+                        <div class="d-none d-md-inline tags">
+                            <ul class="list-unstyled d-inline">
+                                
+                                
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="markdown">
+                        
+    
+    <p>Using just sql scripts for managing database schema migrations is alright.
+But in that case we have to explicitly create a system where we have to
+keep track of the sequences of the scripts (one of the reasons: foreign key dependencies).
+While in development environment, if we want to check whether existing
+function/method code compatible with earlier table schema, we have to
+manually write some commands in our favorite db client. That adds up extra effort.</p>
+<p>There are many ways we can automate the process of upgrading/rollbacking the db changes by
+using tools like flyway/liquibase.
+But I find it quite tedious to use json/yaml and likewise for managing db migrations. Alembic does the
+same job with Python code (which is simple to read and maintain).</p>
+<p>Let&rsquo;s go through an example to understand how awesomely easy it is to manage database migrations in alembic.
+Let&rsquo;s create a directory <code>my_db_migration</code>, and <code>cd</code> into it</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">pranav@ubuntu:~$ mkdir my_db_migration
+pranav@ubuntu:~$ cd my_db_migration
+pranav@ubuntu:~/my_db_migration$
+</code></pre></div><p>We can create a virtual environment for our project called <code>env</code>.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">pranav@ubuntu:~/my_db_migration$ virtualenv env
+Using base prefix <span style="color:#e6db74">&#39;/usr&#39;</span>
+New python executable in /home/pranav/my_db_migration/env/bin/python3
+Also creating executable in /home/pranav/my_db_migration/env/bin/python
+Installing setuptools, pip, wheel...
+<span style="color:#66d9ef">done</span>.
+</code></pre></div><p>Now, let&rsquo;s activate it,</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">pranav@ubuntu:~/my_db_migration$ source env/bin/activate
+<span style="color:#f92672">(</span>env<span style="color:#f92672">)</span> pranav@ubuntu:~/my_db_migration$
+</code></pre></div><p>We are ready to create our alembic project. For that we will install the <code>alembic</code> library with pip.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#f92672">(</span>env<span style="color:#f92672">)</span> pranav@ubuntu:~/my_db_migration$ pip install alembic
+Collecting alembic
+  Downloading https://files.pythonhosted.org/packages/70/3d/d5ed7a71fe84f9ed0a69e91232a40b0b148b151524dc5bb1c8e4211eb117/alembic-1.3.0.tar.gz <span style="color:#f92672">(</span>1.1MB<span style="color:#f92672">)</span>
+     |████████████████████████████████| 1.1MB 923kB/s 
+Collecting SQLAlchemy&gt;<span style="color:#f92672">=</span>1.1.0
+  Downloading https://files.pythonhosted.org/packages/14/0e/487f7fc1e432cec50d2678f94e4133f2b9e9356e35bacc30d73e8cb831fc/SQLAlchemy-1.3.10.tar.gz <span style="color:#f92672">(</span>6.0MB<span style="color:#f92672">)</span>
+     |████████████████████████████████| 6.0MB 9.0MB/s 
+Collecting Mako
+  Downloading https://files.pythonhosted.org/packages/b0/3c/8dcd6883d009f7cae0f3157fb53e9afb05a0d3d33b3db1268ec2e6f4a56b/Mako-1.1.0.tar.gz <span style="color:#f92672">(</span>463kB<span style="color:#f92672">)</span>
+     |████████████████████████████████| 471kB 1.8MB/s 
+Collecting python-editor&gt;<span style="color:#f92672">=</span>0.3
+  Downloading https://files.pythonhosted.org/packages/c6/d3/201fc3abe391bbae6606e6f1d598c15d367033332bd54352b12f35513717/python_editor-1.0.4-py3-none-any.whl
+Collecting python-dateutil
+  Downloading https://files.pythonhosted.org/packages/d4/70/d60450c3dd48ef87586924207ae8907090de0b306af2bce5d134d78615cb/python_dateutil-2.8.1-py2.py3-none-any.whl <span style="color:#f92672">(</span>227kB<span style="color:#f92672">)</span>
+     |████████████████████████████████| 235kB 8.0MB/s 
+Collecting MarkupSafe&gt;<span style="color:#f92672">=</span>0.9.2
+  Downloading https://files.pythonhosted.org/packages/b2/5f/23e0023be6bb885d00ffbefad2942bc51a620328ee910f64abe5a8d18dd1/MarkupSafe-1.1.1-cp36-cp36m-manylinux1_x86_64.whl
+Collecting six&gt;<span style="color:#f92672">=</span>1.5
+  Downloading https://files.pythonhosted.org/packages/65/26/32b8464df2a97e6dd1b656ed26b2c194606c16fe163c695a992b36c11cdf/six-1.13.0-py2.py3-none-any.whl
+Building wheels <span style="color:#66d9ef">for</span> collected packages: alembic, SQLAlchemy, Mako
+  Building wheel <span style="color:#66d9ef">for</span> alembic <span style="color:#f92672">(</span>setup.py<span style="color:#f92672">)</span> ... <span style="color:#66d9ef">done</span>
+  Created wheel <span style="color:#66d9ef">for</span> alembic: filename<span style="color:#f92672">=</span>alembic-1.3.0-py2.py3-none-any.whl size<span style="color:#f92672">=</span><span style="color:#ae81ff">144427</span> sha256<span style="color:#f92672">=</span>ca5d1444658877ebb2d612420ae10b6807ff190199ec1746ee67d80e997a8999
+  Stored in directory: /home/pranav/.cache/pip/wheels/40/f8/22/ad0f408796a4c656fae5ee1fd8d8a139b19ca4af61059cea5b
+  Building wheel <span style="color:#66d9ef">for</span> SQLAlchemy <span style="color:#f92672">(</span>setup.py<span style="color:#f92672">)</span> ... <span style="color:#66d9ef">done</span>
+  Created wheel <span style="color:#66d9ef">for</span> SQLAlchemy: filename<span style="color:#f92672">=</span>SQLAlchemy-1.3.10-cp36-cp36m-linux_x86_64.whl size<span style="color:#f92672">=</span><span style="color:#ae81ff">1200400</span> sha256<span style="color:#f92672">=</span>b2b67ee0f089bfb5972b0cc2a19b439e89badb4da8094d405a2808c51286f287
+  Stored in directory: /home/pranav/.cache/pip/wheels/4b/b2/89/cd2231ee623987c605f049df55f40a3e4252ef6a15b94836c2
+  Building wheel <span style="color:#66d9ef">for</span> Mako <span style="color:#f92672">(</span>setup.py<span style="color:#f92672">)</span> ... <span style="color:#66d9ef">done</span>
+  Created wheel <span style="color:#66d9ef">for</span> Mako: filename<span style="color:#f92672">=</span>Mako-1.1.0-cp36-none-any.whl size<span style="color:#f92672">=</span><span style="color:#ae81ff">75363</span> sha256<span style="color:#f92672">=</span>3f73fac5d5e18ce52c37f5a87f8e2c46c9d71dde81c4938bf21603ec44be73ef
+  Stored in directory: /home/pranav/.cache/pip/wheels/98/32/7b/a291926643fc1d1e02593e0d9e247c5a866a366b8343b7aa27
+Successfully built alembic SQLAlchemy Mako
+Installing collected packages: SQLAlchemy, MarkupSafe, Mako, python-editor, six, python-dateutil, alembic
+Successfully installed Mako-1.1.0 MarkupSafe-1.1.1 SQLAlchemy-1.3.10 alembic-1.3.0 python-dateutil-2.8.1 python-editor-1.0.4 six-1.13.0
+</code></pre></div><p>We will create an alembic project with following command</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#f92672">(</span>env<span style="color:#f92672">)</span> pranav@ubuntu:~/my_db_migration$ alembic init alembic
+  Creating directory /home/pranav/my_db_migration/alembic ...  <span style="color:#66d9ef">done</span>
+  Creating directory /home/pranav/my_db_migration/alembic/versions ...  <span style="color:#66d9ef">done</span>
+  Generating /home/pranav/my_db_migration/alembic.ini ...  <span style="color:#66d9ef">done</span>
+  Generating /home/pranav/my_db_migration/alembic/env.py ...  <span style="color:#66d9ef">done</span>
+  Generating /home/pranav/my_db_migration/alembic/script.py.mako ...  <span style="color:#66d9ef">done</span>
+  Generating /home/pranav/my_db_migration/alembic/README ...  <span style="color:#66d9ef">done</span>
+  Please edit configuration/connection/logging settings in <span style="color:#e6db74">&#39;/home/pranav/my_db_migration/alembic.ini&#39;</span> before proceeding.
+</code></pre></div><p>The above command creates a structure for alembic migrations. We have to edit the <code>.ini</code> file
+to make the connection with the database. For this example we are going to use
+the postgres database.</p>
+<p>Let&rsquo;s connect to local postgres server on our dev machine using command</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">pranav@ubuntu:~$ psql
+psql <span style="color:#f92672">(</span>10.10 <span style="color:#f92672">(</span>Ubuntu 10.10-0ubuntu0.18.04.1<span style="color:#f92672">))</span>
+Type <span style="color:#e6db74">&#34;help&#34;</span> <span style="color:#66d9ef">for</span> help.
+
+pranav<span style="color:#f92672">=</span>&gt;
+</code></pre></div><p>Create a table called <code>example_db</code> for the example</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">pranav<span style="color:#f92672">=</span>&gt; create database example_db;
+CREATE DATABASE
+pranav<span style="color:#f92672">=</span>&gt; <span style="color:#ae81ff">\c</span> example_db;
+You are now connected to database <span style="color:#e6db74">&#34;example_db&#34;</span> as user <span style="color:#e6db74">&#34;pranav&#34;</span>.
+</code></pre></div><p>Now that we have created the database <code>example_db</code>, let us edit the <code>alembic.ini</code> file
+created by alembic to add the database connection string. replace</p>
+<p><code>sqlalchemy.url = driver://user:pass@localhost/dbname</code></p>
+<p>with</p>
+<p><code>sqlalchemy.url = postgres://username:password@localhost:5432/example_db</code></p>
+<p>Now, let&rsquo;s create a sqlalchemy model from which we are going to generate the database version.
+For that we first have to install sqlalchemy.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#f92672">(</span>env<span style="color:#f92672">)</span> pranav@ubuntu:~/my_db_migration$ pip install sqlalchemy
+Requirement already satisfied: sqlalchemy in ./env/lib/python3.6/site-packages <span style="color:#f92672">(</span>1.3.10<span style="color:#f92672">)</span>
+<span style="color:#f92672">(</span>env<span style="color:#f92672">)</span> pranav@ubuntu:~/my_db_migration$ pip freeze
+alembic<span style="color:#f92672">==</span>1.3.0
+Mako<span style="color:#f92672">==</span>1.1.0
+MarkupSafe<span style="color:#f92672">==</span>1.1.1
+python-dateutil<span style="color:#f92672">==</span>2.8.1
+python-editor<span style="color:#f92672">==</span>1.0.4
+six<span style="color:#f92672">==</span>1.13.0
+SQLAlchemy<span style="color:#f92672">==</span>1.3.10
+</code></pre></div><p>Seems like it is already installed as it is the dependency for the <code>alembic</code>.</p>
+<p>Create a models.py which contains the code,</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> sqlalchemy.ext.declarative <span style="color:#f92672">import</span> declarative_base
+<span style="color:#f92672">from</span> sqlalchemy <span style="color:#f92672">import</span> Column, Integer, String
+
+Base <span style="color:#f92672">=</span> declarative_base()
+
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Student</span>(Base):
+    __tablename__ <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;students&#39;</span>
+    name <span style="color:#f92672">=</span> Column(String)
+    seq <span style="color:#f92672">=</span> Column(Integer, primary_key<span style="color:#f92672">=</span>True)
+
+    <span style="color:#66d9ef">def</span> __init__(self, name):
+        self<span style="color:#f92672">.</span>name <span style="color:#f92672">=</span> name
+</code></pre></div><p>Now that we have added our model, let&rsquo;s run some commands to autogenerate the migration.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#f92672">(</span>env<span style="color:#f92672">)</span> pranav@ubuntu:~/my_db_migration$ alembic revision --autogenerate -m <span style="color:#e6db74">&#34;Added students table&#34;</span>
+Traceback <span style="color:#f92672">(</span>most recent call last<span style="color:#f92672">)</span>:
+  File <span style="color:#e6db74">&#34;/home/pranav/my_db_migration/env/bin/alembic&#34;</span>, line 8, in &lt;module&gt;
+    sys.exit<span style="color:#f92672">(</span>main<span style="color:#f92672">())</span>
+  File <span style="color:#e6db74">&#34;/home/pranav/my_db_migration/env/lib/python3.6/site-packages/alembic/config.py&#34;</span>, line 575, in main
+    CommandLine<span style="color:#f92672">(</span>prog<span style="color:#f92672">=</span>prog<span style="color:#f92672">)</span>.main<span style="color:#f92672">(</span>argv<span style="color:#f92672">=</span>argv<span style="color:#f92672">)</span>
+  File <span style="color:#e6db74">&#34;/home/pranav/my_db_migration/env/lib/python3.6/site-packages/alembic/config.py&#34;</span>, line 569, in main
+    self.run_cmd<span style="color:#f92672">(</span>cfg, options<span style="color:#f92672">)</span>
+  File <span style="color:#e6db74">&#34;/home/pranav/my_db_migration/env/lib/python3.6/site-packages/alembic/config.py&#34;</span>, line 549, in run_cmd
+    **dict<span style="color:#f92672">((</span>k, getattr<span style="color:#f92672">(</span>options, k, None<span style="color:#f92672">))</span> <span style="color:#66d9ef">for</span> k in kwarg<span style="color:#f92672">)</span>
+  File <span style="color:#e6db74">&#34;/home/pranav/my_db_migration/env/lib/python3.6/site-packages/alembic/command.py&#34;</span>, line 214, in revision
+    script_directory.run_env<span style="color:#f92672">()</span>
+  File <span style="color:#e6db74">&#34;/home/pranav/my_db_migration/env/lib/python3.6/site-packages/alembic/script/base.py&#34;</span>, line 489, in run_env
+    util.load_python_file<span style="color:#f92672">(</span>self.dir, <span style="color:#e6db74">&#34;env.py&#34;</span><span style="color:#f92672">)</span>
+  File <span style="color:#e6db74">&#34;/home/pranav/my_db_migration/env/lib/python3.6/site-packages/alembic/util/pyfiles.py&#34;</span>, line 98, in load_python_file
+    module <span style="color:#f92672">=</span> load_module_py<span style="color:#f92672">(</span>module_id, path<span style="color:#f92672">)</span>
+  File <span style="color:#e6db74">&#34;/home/pranav/my_db_migration/env/lib/python3.6/site-packages/alembic/util/compat.py&#34;</span>, line 173, in load_module_py
+    spec.loader.exec_module<span style="color:#f92672">(</span>module<span style="color:#f92672">)</span>
+  File <span style="color:#e6db74">&#34;&lt;frozen importlib._bootstrap_external&gt;&#34;</span>, line 678, in exec_module
+  File <span style="color:#e6db74">&#34;&lt;frozen importlib._bootstrap&gt;&#34;</span>, line 219, in _call_with_frames_removed
+  File <span style="color:#e6db74">&#34;alembic/env.py&#34;</span>, line 77, in &lt;module&gt;
+    run_migrations_online<span style="color:#f92672">()</span>
+  File <span style="color:#e6db74">&#34;alembic/env.py&#34;</span>, line 62, in run_migrations_online
+    poolclass<span style="color:#f92672">=</span>pool.NullPool,
+  File <span style="color:#e6db74">&#34;/home/pranav/my_db_migration/env/lib/python3.6/site-packages/sqlalchemy/engine/__init__.py&#34;</span>, line 522, in engine_from_config
+    <span style="color:#66d9ef">return</span> create_engine<span style="color:#f92672">(</span>url, **options<span style="color:#f92672">)</span>
+  File <span style="color:#e6db74">&#34;/home/pranav/my_db_migration/env/lib/python3.6/site-packages/sqlalchemy/engine/__init__.py&#34;</span>, line 479, in create_engine
+    <span style="color:#66d9ef">return</span> strategy.create<span style="color:#f92672">(</span>*args, **kwargs<span style="color:#f92672">)</span>
+  File <span style="color:#e6db74">&#34;/home/pranav/my_db_migration/env/lib/python3.6/site-packages/sqlalchemy/engine/strategies.py&#34;</span>, line 87, in create
+    dbapi <span style="color:#f92672">=</span> dialect_cls.dbapi<span style="color:#f92672">(</span>**dbapi_args<span style="color:#f92672">)</span>
+  File <span style="color:#e6db74">&#34;/home/pranav/my_db_migration/env/lib/python3.6/site-packages/sqlalchemy/dialects/postgresql/psycopg2.py&#34;</span>, line 737, in dbapi
+    import psycopg2
+ModuleNotFoundError: No module named <span style="color:#e6db74">&#39;psycopg2&#39;</span>
+</code></pre></div><p>As we are trying to connect to postgresql, we need <code>psycopg2</code> installed. Let&rsquo;s install it.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#f92672">(</span>env<span style="color:#f92672">)</span> pranav@ubuntu:~/my_db_migration$ sudo apt-get install libpq-dev
+<span style="color:#f92672">[</span>sudo<span style="color:#f92672">]</span> password <span style="color:#66d9ef">for</span> pranav: 
+Reading package lists... Done
+Building dependency tree       
+Reading state information... Done
+Suggested packages:
+  postgresql-doc-10
+The following NEW packages will be installed:
+  libpq-dev
+<span style="color:#ae81ff">0</span> upgraded, <span style="color:#ae81ff">1</span> newly installed, <span style="color:#ae81ff">0</span> to remove and <span style="color:#ae81ff">29</span> not upgraded.
+Need to get <span style="color:#ae81ff">218</span> kB of archives.
+After this operation, 1,092 kB of additional disk space will be used.
+Get:1 http://us.archive.ubuntu.com/ubuntu bionic-updates/main amd64 libpq-dev amd64 10.10-0ubuntu0.18.04.1 <span style="color:#f92672">[</span><span style="color:#ae81ff">218</span> kB<span style="color:#f92672">]</span>
+Fetched <span style="color:#ae81ff">218</span> kB in 1s <span style="color:#f92672">(</span><span style="color:#ae81ff">232</span> kB/s<span style="color:#f92672">)</span>    
+Selecting previously unselected package libpq-dev.
+<span style="color:#f92672">(</span>Reading database ... <span style="color:#ae81ff">192301</span> files and directories currently installed.<span style="color:#f92672">)</span>
+Preparing to unpack .../libpq-dev_10.10-0ubuntu0.18.04.1_amd64.deb ...
+Unpacking libpq-dev <span style="color:#f92672">(</span>10.10-0ubuntu0.18.04.1<span style="color:#f92672">)</span> ...
+Setting up libpq-dev <span style="color:#f92672">(</span>10.10-0ubuntu0.18.04.1<span style="color:#f92672">)</span> ...
+Processing triggers <span style="color:#66d9ef">for</span> man-db <span style="color:#f92672">(</span>2.8.3-2ubuntu0.1<span style="color:#f92672">)</span> ...
+<span style="color:#f92672">(</span>env<span style="color:#f92672">)</span> pranav@ubuntu:~/my_db_migration$ pip install psycopg2
+Collecting psycopg2
+  Using cached https://files.pythonhosted.org/packages/84/d7/6a93c99b5ba4d4d22daa3928b983cec66df4536ca50b22ce5dcac65e4e71/psycopg2-2.8.4.tar.gz
+Building wheels <span style="color:#66d9ef">for</span> collected packages: psycopg2
+  Building wheel <span style="color:#66d9ef">for</span> psycopg2 <span style="color:#f92672">(</span>setup.py<span style="color:#f92672">)</span> ... <span style="color:#66d9ef">done</span>
+  Created wheel <span style="color:#66d9ef">for</span> psycopg2: filename<span style="color:#f92672">=</span>psycopg2-2.8.4-cp36-cp36m-linux_x86_64.whl size<span style="color:#f92672">=</span><span style="color:#ae81ff">419315</span> sha256<span style="color:#f92672">=</span>1de8e1dd0029846c82a21db758c76b774c71133aa3d124c1b40d950b9c6d9617
+  Stored in directory: /home/pranav/.cache/pip/wheels/7e/5b/53/30085c62689dcfce50c8f40759945a49eb856af082e9ebf751
+Successfully built psycopg2
+Installing collected packages: psycopg2
+Successfully installed psycopg2-2.8.4
+</code></pre></div><p>Now, we are gonna create table using autogenerate command</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#f92672">(</span>env<span style="color:#f92672">)</span> pranav@ubuntu:~/my_db_migration$ alembic revision --autogenerate -m <span style="color:#e6db74">&#34;Added students table&#34;</span>
+INFO  <span style="color:#f92672">[</span>alembic.runtime.migration<span style="color:#f92672">]</span> Context impl PostgresqlImpl.
+INFO  <span style="color:#f92672">[</span>alembic.runtime.migration<span style="color:#f92672">]</span> Will assume transactional DDL.
+ERROR <span style="color:#f92672">[</span>alembic.util.messaging<span style="color:#f92672">]</span> Can<span style="color:#e6db74">&#39;t proceed with --autogenerate option; environment script /home/pranav/my_db_migration/alembic/env.py does not provide a MetaData object or sequence of objects to the context.
+</span><span style="color:#e6db74">  FAILED: Can&#39;</span>t proceed with --autogenerate option; environment script /home/pranav/my_db_migration/alembic/env.py does not provide a MetaData object or sequence of objects to the context.
+</code></pre></div><p>But it fails. The reason is that alembic is not having any information about table metadata to generate
+the script. So, we will add the base metadata in <code>env.py</code>.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> logging.config <span style="color:#f92672">import</span> fileConfig
+
+<span style="color:#f92672">from</span> sqlalchemy <span style="color:#f92672">import</span> engine_from_config
+<span style="color:#f92672">from</span> sqlalchemy <span style="color:#f92672">import</span> pool
+
+<span style="color:#f92672">from</span> alembic <span style="color:#f92672">import</span> context
+
+<span style="color:#f92672">from</span> models <span style="color:#f92672">import</span> Base
+
+<span style="color:#75715e"># this is the Alembic Config object, which provides</span>
+<span style="color:#75715e"># access to the values within the .ini file in use.</span>
+config <span style="color:#f92672">=</span> context<span style="color:#f92672">.</span>config
+
+<span style="color:#75715e"># Interpret the config file for Python logging.</span>
+<span style="color:#75715e"># This line sets up loggers basically.</span>
+fileConfig(config<span style="color:#f92672">.</span>config_file_name)
+
+<span style="color:#75715e"># add your model&#39;s MetaData object here</span>
+<span style="color:#75715e"># for &#39;autogenerate&#39; support</span>
+<span style="color:#75715e"># from myapp import mymodel</span>
+<span style="color:#75715e"># target_metadata = mymodel.Base.metadata</span>
+target_metadata <span style="color:#f92672">=</span> Base<span style="color:#f92672">.</span>metadata
+
+<span style="color:#f92672">...</span>
+</code></pre></div><p>Now, let&rsquo;s run the autogenerate command again.</p>
+<pre><code>(env) pranav@ubuntu:~/my_db_migration$ alembic revision --autogenerate -m &quot;Added students table&quot;
+Traceback (most recent call last):
+  File &quot;/home/pranav/my_db_migration/env/bin/alembic&quot;, line 8, in &lt;module&gt;
+    sys.exit(main())
+  File &quot;/home/pranav/my_db_migration/env/lib/python3.6/site-packages/alembic/config.py&quot;, line 575, in main
+    CommandLine(prog=prog).main(argv=argv)
+  File &quot;/home/pranav/my_db_migration/env/lib/python3.6/site-packages/alembic/config.py&quot;, line 569, in main
+    self.run_cmd(cfg, options)
+  File &quot;/home/pranav/my_db_migration/env/lib/python3.6/site-packages/alembic/config.py&quot;, line 549, in run_cmd
+    **dict((k, getattr(options, k, None)) for k in kwarg)
+  File &quot;/home/pranav/my_db_migration/env/lib/python3.6/site-packages/alembic/command.py&quot;, line 214, in revision
+    script_directory.run_env()
+  File &quot;/home/pranav/my_db_migration/env/lib/python3.6/site-packages/alembic/script/base.py&quot;, line 489, in run_env
+    util.load_python_file(self.dir, &quot;env.py&quot;)
+  File &quot;/home/pranav/my_db_migration/env/lib/python3.6/site-packages/alembic/util/pyfiles.py&quot;, line 98, in load_python_file
+    module = load_module_py(module_id, path)
+  File &quot;/home/pranav/my_db_migration/env/lib/python3.6/site-packages/alembic/util/compat.py&quot;, line 173, in load_module_py
+    spec.loader.exec_module(module)
+  File &quot;&lt;frozen importlib._bootstrap_external&gt;&quot;, line 678, in exec_module
+  File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 219, in _call_with_frames_removed
+  File &quot;alembic/env.py&quot;, line 8, in &lt;module&gt;
+    from models import Base
+ModuleNotFoundError: No module named 'models'
+</code></pre><p>It seems that current directory is not in PYTHONPATH. Add current directory to PYTHONPATH with command,</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#f92672">(</span>env<span style="color:#f92672">)</span> pranav@ubuntu:~/my_db_migration$ export PYTHONPATH<span style="color:#f92672">=</span>.
+<span style="color:#f92672">(</span>env<span style="color:#f92672">)</span> pranav@ubuntu:~/my_db_migration$ alembic revision --autogenerate -m <span style="color:#e6db74">&#34;Added students table&#34;</span>
+INFO  <span style="color:#f92672">[</span>alembic.runtime.migration<span style="color:#f92672">]</span> Context impl PostgresqlImpl.
+INFO  <span style="color:#f92672">[</span>alembic.runtime.migration<span style="color:#f92672">]</span> Will assume transactional DDL.
+INFO  <span style="color:#f92672">[</span>alembic.autogenerate.compare<span style="color:#f92672">]</span> Detected added table <span style="color:#e6db74">&#39;students&#39;</span>
+  Generating /home/pranav/my_db_migration/alembic/versions/6f1220842ecc_added_students_table.py ...  <span style="color:#66d9ef">done</span>
+</code></pre></div><p>It successfully creates the version.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">pranav@ubuntu:~/my_db_migration$ ls
+alembic  alembic.ini  env  models.py  __pycache__
+pranav@ubuntu:~/my_db_migration$ cd alembic/
+pranav@ubuntu:~/my_db_migration/alembic$ ls
+env.py  __pycache__  README  script.py.mako  versions
+pranav@ubuntu:~/my_db_migration/alembic$ cd versions/
+pranav@ubuntu:~/my_db_migration/alembic/versions$ ls
+6f1220842ecc_added_students_table.py  __pycache__
+pranav@ubuntu:~/my_db_migration/alembic/versions$ cat 6f1220842ecc_added_students_table.py 
+<span style="color:#e6db74">&#34;&#34;&#34;Added students table
+</span><span style="color:#e6db74">
+</span><span style="color:#e6db74">Revision ID: 6f1220842ecc
+</span><span style="color:#e6db74">Revises: 
+</span><span style="color:#e6db74">Create Date: 2019-11-09 18:59:29.147570
+</span><span style="color:#e6db74">
+</span><span style="color:#e6db74">&#34;&#34;&#34;</span>
+from alembic import op
+import sqlalchemy as sa
+
+
+<span style="color:#75715e"># revision identifiers, used by Alembic.</span>
+revision <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;6f1220842ecc&#39;</span>
+down_revision <span style="color:#f92672">=</span> None
+branch_labels <span style="color:#f92672">=</span> None
+depends_on <span style="color:#f92672">=</span> None
+
+
+def upgrade<span style="color:#f92672">()</span>:
+    <span style="color:#75715e"># ### commands auto generated by Alembic - please adjust! ###</span>
+    op.create_table<span style="color:#f92672">(</span><span style="color:#e6db74">&#39;students&#39;</span>,
+    sa.Column<span style="color:#f92672">(</span><span style="color:#e6db74">&#39;name&#39;</span>, sa.String<span style="color:#f92672">()</span>, nullable<span style="color:#f92672">=</span>True<span style="color:#f92672">)</span>,
+    sa.Column<span style="color:#f92672">(</span><span style="color:#e6db74">&#39;seq&#39;</span>, sa.Integer<span style="color:#f92672">()</span>, nullable<span style="color:#f92672">=</span>False<span style="color:#f92672">)</span>,
+    sa.PrimaryKeyConstraint<span style="color:#f92672">(</span><span style="color:#e6db74">&#39;seq&#39;</span><span style="color:#f92672">)</span>
+    <span style="color:#f92672">)</span>
+    <span style="color:#75715e"># ### end Alembic commands ###</span>
+
+
+def downgrade<span style="color:#f92672">()</span>:
+    <span style="color:#75715e"># ### commands auto generated by Alembic - please adjust! ###</span>
+    op.drop_table<span style="color:#f92672">(</span><span style="color:#e6db74">&#39;students&#39;</span><span style="color:#f92672">)</span>
+    <span style="color:#75715e"># ### end Alembic commands ###</span>
+</code></pre></div><p>Now, let&rsquo;s apply the migration to our database,</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#f92672">(</span>env<span style="color:#f92672">)</span> pranav@ubuntu:~/my_db_migration$ alembic upgrade head
+INFO  <span style="color:#f92672">[</span>alembic.runtime.migration<span style="color:#f92672">]</span> Context impl PostgresqlImpl.
+INFO  <span style="color:#f92672">[</span>alembic.runtime.migration<span style="color:#f92672">]</span> Will assume transactional DDL.
+INFO  <span style="color:#f92672">[</span>alembic.runtime.migration<span style="color:#f92672">]</span> Running upgrade  -&gt; 6f1220842ecc, Added students table
+</code></pre></div><p>We have successfully applied the migration. To see the table created, go to the
+postgres client and execute,</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">example_db<span style="color:#f92672">=</span>&gt; <span style="color:#ae81ff">\d</span>t
+             List of relations
+ Schema |      Name       | Type  | Owner  
+--------+-----------------+-------+--------
+ public | alembic_version | table | pranav
+ public | students        | table | pranav
+<span style="color:#f92672">(</span><span style="color:#ae81ff">2</span> rows<span style="color:#f92672">)</span>
+
+example_db<span style="color:#f92672">=</span>&gt; <span style="color:#ae81ff">\d</span> students
+                                  Table <span style="color:#e6db74">&#34;public.students&#34;</span>
+ Column |       Type        | Collation | Nullable |                Default                
+--------+-------------------+-----------+----------+---------------------------------------
+ name   | character varying |           |          | 
+ seq    | integer           |           | not null | nextval<span style="color:#f92672">(</span><span style="color:#e6db74">&#39;students_seq_seq&#39;</span>::regclass<span style="color:#f92672">)</span>
+Indexes:
+    <span style="color:#e6db74">&#34;students_pkey&#34;</span> PRIMARY KEY, btree <span style="color:#f92672">(</span>seq<span style="color:#f92672">)</span>
+</code></pre></div><p>You can check the current alembic version of your database,</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">example_db<span style="color:#f92672">=</span>&gt; <span style="color:#66d9ef">select</span> * from alembic_version;
+ version_num  
+--------------
+ 6f1220842ecc
+<span style="color:#f92672">(</span><span style="color:#ae81ff">1</span> row<span style="color:#f92672">)</span>
+
+</code></pre></div><p>Let&rsquo;s add another non nullable column email to the table, and make name non nullable as well.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> sqlalchemy.ext.declarative <span style="color:#f92672">import</span> declarative_base
+<span style="color:#f92672">from</span> sqlalchemy <span style="color:#f92672">import</span> Column, Integer, String
+
+Base <span style="color:#f92672">=</span> declarative_base()
+
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Student</span>(Base):
+    __tablename__ <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;students&#39;</span>
+    name <span style="color:#f92672">=</span> Column(String, nullable<span style="color:#f92672">=</span>False)
+    seq <span style="color:#f92672">=</span> Column(Integer, primary_key<span style="color:#f92672">=</span>True)
+    email <span style="color:#f92672">=</span> Column(String, nullable<span style="color:#f92672">=</span>False)
+
+    <span style="color:#66d9ef">def</span> __init__(self, name, email):
+        self<span style="color:#f92672">.</span>name <span style="color:#f92672">=</span> name
+        self<span style="color:#f92672">.</span>email <span style="color:#f92672">=</span> email
+</code></pre></div><p>Let&rsquo;s run the autogenerate command and apply the migration,</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#f92672">(</span>env<span style="color:#f92672">)</span> pranav@ubuntu:~/my_db_migration$ alembic revision --autogenerate -m <span style="color:#e6db74">&#34;Added column &#39;email&#39; to students table, and made &#39;name&#39; necessary&#34;</span>
+INFO  <span style="color:#f92672">[</span>alembic.runtime.migration<span style="color:#f92672">]</span> Context impl PostgresqlImpl.
+INFO  <span style="color:#f92672">[</span>alembic.runtime.migration<span style="color:#f92672">]</span> Will assume transactional DDL.
+INFO  <span style="color:#f92672">[</span>alembic.ddl.postgresql<span style="color:#f92672">]</span> Detected sequence named <span style="color:#e6db74">&#39;students_seq_seq&#39;</span> as owned by integer column <span style="color:#e6db74">&#39;students(seq)&#39;</span>, assuming SERIAL and omitting
+INFO  <span style="color:#f92672">[</span>alembic.autogenerate.compare<span style="color:#f92672">]</span> Detected added column <span style="color:#e6db74">&#39;students.email&#39;</span>
+INFO  <span style="color:#f92672">[</span>alembic.autogenerate.compare<span style="color:#f92672">]</span> Detected NOT NULL on column <span style="color:#e6db74">&#39;students.name&#39;</span>
+  Generating /home/pranav/my_db_migration/alembic/versions/64d7e64488b4_added_column_email_to_students_table_.py ...  <span style="color:#66d9ef">done</span>
+<span style="color:#f92672">(</span>env<span style="color:#f92672">)</span> pranav@ubuntu:~/my_db_migration$ alembic upgrade head
+INFO  <span style="color:#f92672">[</span>alembic.runtime.migration<span style="color:#f92672">]</span> Context impl PostgresqlImpl.
+INFO  <span style="color:#f92672">[</span>alembic.runtime.migration<span style="color:#f92672">]</span> Will assume transactional DDL.
+INFO  <span style="color:#f92672">[</span>alembic.runtime.migration<span style="color:#f92672">]</span> Running upgrade 6f1220842ecc -&gt; 64d7e64488b4, Added column <span style="color:#e6db74">&#39;email&#39;</span> to students table, and made <span style="color:#e6db74">&#39;name&#39;</span> necessary
+</code></pre></div><p>Now, if you see the students table structure again, &lsquo;name&rsquo; is the mandatory field, and there
+is new mandatory field &lsquo;email&rsquo;. The alembic version is increased as well</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">example_db<span style="color:#f92672">=</span>&gt; <span style="color:#ae81ff">\d</span> students 
+                                  Table <span style="color:#e6db74">&#34;public.students&#34;</span>
+ Column |       Type        | Collation | Nullable |                Default                
+--------+-------------------+-----------+----------+---------------------------------------
+ name   | character varying |           | not null | 
+ seq    | integer           |           | not null | nextval<span style="color:#f92672">(</span><span style="color:#e6db74">&#39;students_seq_seq&#39;</span>::regclass<span style="color:#f92672">)</span>
+ email  | character varying |           | not null | 
+Indexes:
+    <span style="color:#e6db74">&#34;students_pkey&#34;</span> PRIMARY KEY, btree <span style="color:#f92672">(</span>seq<span style="color:#f92672">)</span>
+
+example_db<span style="color:#f92672">=</span>&gt; <span style="color:#66d9ef">select</span> * from alembic_version;
+ version_num  
+--------------
+ 64d7e64488b4
+<span style="color:#f92672">(</span><span style="color:#ae81ff">1</span> row<span style="color:#f92672">)</span>
+
+</code></pre></div><p>Want to rollback by one step? Just execute,</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#f92672">(</span>env<span style="color:#f92672">)</span> pranav@ubuntu:~/my_db_migration$ alembic downgrade -1
+INFO  <span style="color:#f92672">[</span>alembic.runtime.migration<span style="color:#f92672">]</span> Context impl PostgresqlImpl.
+INFO  <span style="color:#f92672">[</span>alembic.runtime.migration<span style="color:#f92672">]</span> Will assume transactional DDL.
+INFO  <span style="color:#f92672">[</span>alembic.runtime.migration<span style="color:#f92672">]</span> Running downgrade 64d7e64488b4 -&gt; 6f1220842ecc, Added column <span style="color:#e6db74">&#39;email&#39;</span> to students table, and made <span style="color:#e6db74">&#39;name&#39;</span> necessary
+</code></pre></div><p>And voila,</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">example_db<span style="color:#f92672">=</span>&gt; <span style="color:#ae81ff">\d</span> students
+                                  Table <span style="color:#e6db74">&#34;public.students&#34;</span>
+ Column |       Type        | Collation | Nullable |                Default                
+--------+-------------------+-----------+----------+---------------------------------------
+ name   | character varying |           |          | 
+ seq    | integer           |           | not null | nextval<span style="color:#f92672">(</span><span style="color:#e6db74">&#39;students_seq_seq&#39;</span>::regclass<span style="color:#f92672">)</span>
+Indexes:
+    <span style="color:#e6db74">&#34;students_pkey&#34;</span> PRIMARY KEY, btree <span style="color:#f92672">(</span>seq<span style="color:#f92672">)</span>
+
+example_db<span style="color:#f92672">=</span>&gt; <span style="color:#66d9ef">select</span> * from alembic_version;
+ version_num  
+--------------
+ 6f1220842ecc
+<span style="color:#f92672">(</span><span style="color:#ae81ff">1</span> row<span style="color:#f92672">)</span>
+
+</code></pre></div><p>As simple as that.</p>
+
+
+
+                    </div>
+                </div>
+
+                
+                    <div class="col-sm-12 col-md-3">
+                        <nav id="TableOfContents" class="sticky-top"></nav>
+                    </div>
+                
+            </div>
+
+            <div class="row">
+                <div
+                    
+                    class="col-sm-12 col-md-9"
+                    
+                >
+                    
+                        <div class="navigation">
+                            <div class="row">
+                                <div class="col-12 col-md-6">
+                                    
+                                        <div class="mx-0 mx-md-4 mt-4 text-left">
+                                            <a href="/blog/curious-case-of-mysql-and-emojis/">
+                                                <span class="icon">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 477.175 477.175">
+        <path d="M145.188,238.575l215.5-215.5c5.3-5.3,5.3-13.8,0-19.1s-13.8-5.3-19.1,0l-225.1,225.1c-5.3,5.3-5.3,13.8,0,19.1l225.1,225 c2.6,2.6,6.1,4,9.5,4s6.9-1.3,9.5-4c5.3-5.3,5.3-13.8,0-19.1L145.188,238.575z" />
+    </svg>
+</span>
+
+                                                <span class="text">Curious Case Of Mysql And Emojis</span>
+                                            </a>
+                                        </div>
+                                    
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    
+                                        <div class="mx-0 mx-md-4 mt-4 text-right">
+                                            <a href="/blog/golang-fan-inout-pattern/">
+                                                <span class="text">Fan In/Out Pattern In Golang</span>
+                                                <span class="icon">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 477.175 477.175">
+        <path d="M360.731,229.075l-225.1-225.1c-5.3-5.3-13.8-5.3-19.1,0s-5.3,13.8,0,19.1l215.5,215.5l-215.5,215.5 c-5.3,5.3-5.3,13.8,0,19.1c2.6,2.6,6.1,4,9.5,4c3.4,0,6.9-1.3,9.5-4l225.1-225.1C365.931,242.875,365.931,234.275,360.731,229.075z" />
+    </svg>
+</span>
+
+                                            </a>
+                                        </div>
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    
+
+                    
+                        <div class="mt-5 mx-0 mx-md-4 disqus">
+                            <div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "https-pranav93-github-io" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+                        </div>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="my-4 footer">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-sm-12 col-md-5">
+                <div class="mx-0 mx-md-4 mb-2 text-center text-md-left">
+                    
+                        <div>
+                            <a class="mx-1 mr-md-2 ml-md-0  text-tags" href="/tags/">
+                                
+                                Tags
+                            </a>
+                        </div>
+                    
+
+                    
+                </div>
+            </div>
+            <div class="col-sm-12 col-md-5">
+                <div class="mx-0 mx-md-4 text-center text-md-right">
+                    
+
+                    
+
+                    
+    <a href="https://github.com/pranav93"
+        target="_blank"
+        class="mx-1 ml-md-2 mr-md-0 icon"
+        aria-label="GitHub">
+
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill-rule="evenodd" clip-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="1.414">
+            <path d="M8 0C3.58 0 0 3.582 0 8c0 3.535 2.292 6.533 5.47 7.59.4.075.547-.172.547-.385 0-.19-.007-.693-.01-1.36-2.226.483-2.695-1.073-2.695-1.073-.364-.924-.89-1.17-.89-1.17-.725-.496.056-.486.056-.486.803.056 1.225.824 1.225.824.714 1.223 1.873.87 2.33.665.072-.517.278-.87.507-1.07-1.777-.2-3.644-.888-3.644-3.953 0-.873.31-1.587.823-2.147-.09-.202-.36-1.015.07-2.117 0 0 .67-.215 2.2.82.64-.178 1.32-.266 2-.27.68.004 1.36.092 2 .27 1.52-1.035 2.19-.82 2.19-.82.43 1.102.16 1.915.08 2.117.51.56.82 1.274.82 2.147 0 3.073-1.87 3.75-3.65 3.947.28.24.54.73.54 1.48 0 1.07-.01 1.93-.01 2.19 0 .21.14.46.55.38C13.71 14.53 16 11.53 16 8c0-4.418-3.582-8-8-8"/>
+        </svg>
+    </a>
+
+
+                    
+
+                    
+
+                    
+
+                    
+
+                    
+    <a href="https://www.linkedin.com/in/ambhorepranav"
+        target="_blank"
+        class="mx-1 ml-md-2 mr-md-0 icon"
+        aria-label="Linkedin">
+
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill-rule="evenodd" clip-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="1.414">
+            <path d="M13.632 13.635h-2.37V9.922c0-.886-.018-2.025-1.234-2.025-1.235 0-1.424.964-1.424 1.96v3.778h-2.37V6H8.51v1.04h.03c.318-.6 1.092-1.233 2.247-1.233 2.4 0 2.845 1.58 2.845 3.637v4.188zM3.558 4.955c-.762 0-1.376-.617-1.376-1.377 0-.758.614-1.375 1.376-1.375.76 0 1.376.617 1.376 1.375 0 .76-.617 1.377-1.376 1.377zm1.188 8.68H2.37V6h2.376v7.635zM14.816 0H1.18C.528 0 0 .516 0 1.153v13.694C0 15.484.528 16 1.18 16h13.635c.652 0 1.185-.516 1.185-1.153V1.153C16 .516 15.467 0 14.815 0z" fill-rule="nonzero"/>
+        </svg>
+    </a>
+
+
+                    
+    <a href="mailto:ambhore.pranav@gmail.com"
+        class="mx-1 ml-md-2 mr-md-0 icon"
+        aria-label="Email">
+
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14 16">
+            <path d="M0 4v8c0 .55.45 1 1 1h12c.55 0 1-.45 1-1V4c0-.55-.45-1-1-1H1c-.55 0-1 .45-1 1zm13 0L7 9 1 4h12zM1 5.5l4 3-4 3v-6zM2 12l3.5-3L7 10.5 8.5 9l3.5 3H2zm11-.5l-4-3 4-3v6z"/>
+        </svg>
+    </a>
+
+
+                    <a href=''
+    class="mx-1 ml-md-2 mr-md-0 icon"
+    aria-label="RSS">
+
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill-rule="evenodd" clip-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="1.414">
+        <path d="M12.8 16C12.8 8.978 7.022 3.2 0 3.2V0c8.777 0 16 7.223 16 16h-3.2zM2.194 11.61c1.21 0 2.195.985 2.195 2.196 0 1.21-.99 2.194-2.2 2.194C.98 16 0 15.017 0 13.806c0-1.21.983-2.195 2.194-2.195zM10.606 16h-3.11c0-4.113-3.383-7.497-7.496-7.497v-3.11c5.818 0 10.606 4.79 10.606 10.607z"/>
+    </svg>
+</a>
+
+
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+
+    
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js" integrity="sha256-1zu+3BnLYV9LdiY85uXMzii3bdrkelyp37e0ZyTAQh0=" crossorigin="anonymous"></script>
+        
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/bash.min.js" defer></script>
+        
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/css.min.js" defer></script>
+        
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/diff.min.js" defer></script>
+        
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/django.min.js" defer></script>
+        
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/javascript.min.js" defer></script>
+        
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/python.min.js" defer></script>
+        
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/yaml.min.js" defer></script>
+        
+        <script>
+            window.addEventListener('load', function() {
+                hljs.initHighlighting();
+            }, true);
+        </script>
+    
+
+    
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/progressively/1.2.5/progressively.min.js" integrity="sha256-LvFVlLdfGI3WeEH+8Ni4kxLm02g2GlOfeGCGLXfRk/U=" crossorigin="anonymous"></script>
+        <script>
+            window.addEventListener('load', function() {
+                progressively.init({delay: 30, throttle: 50});
+            }, true);
+        </script>
+    
+
+    
+
+    
+    
+</body>
+
+</html>

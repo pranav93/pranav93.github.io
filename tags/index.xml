@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Tags on Pranav P. Ambhore</title>
+    <link>/tags/</link>
+    <description>Recent content in Tags on Pranav P. Ambhore</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <lastBuildDate>Fri, 07 Feb 2020 19:01:09 +0530</lastBuildDate><atom:link href="/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>concurrency</title>
+      <link>/tags/concurrency/</link>
+      <pubDate>Fri, 07 Feb 2020 19:01:09 +0530</pubDate>
+      
+      <guid>/tags/concurrency/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>fanin</title>
+      <link>/tags/fanin/</link>
+      <pubDate>Fri, 07 Feb 2020 19:01:09 +0530</pubDate>
+      
+      <guid>/tags/fanin/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>fanout</title>
+      <link>/tags/fanout/</link>
+      <pubDate>Fri, 07 Feb 2020 19:01:09 +0530</pubDate>
+      
+      <guid>/tags/fanout/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>golang</title>
+      <link>/tags/golang/</link>
+      <pubDate>Fri, 07 Feb 2020 19:01:09 +0530</pubDate>
+      
+      <guid>/tags/golang/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>golang channels</title>
+      <link>/tags/golang-channels/</link>
+      <pubDate>Fri, 07 Feb 2020 19:01:09 +0530</pubDate>
+      
+      <guid>/tags/golang-channels/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>parallelism</title>
+      <link>/tags/parallelism/</link>
+      <pubDate>Fri, 07 Feb 2020 19:01:09 +0530</pubDate>
+      
+      <guid>/tags/parallelism/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>database</title>
+      <link>/tags/database/</link>
+      <pubDate>Sat, 09 Nov 2019 19:01:09 +0530</pubDate>
+      
+      <guid>/tags/database/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>migration</title>
+      <link>/tags/migration/</link>
+      <pubDate>Sat, 09 Nov 2019 19:01:09 +0530</pubDate>
+      
+      <guid>/tags/migration/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>mysql</title>
+      <link>/tags/mysql/</link>
+      <pubDate>Sat, 09 Nov 2019 19:01:09 +0530</pubDate>
+      
+      <guid>/tags/mysql/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>postgresql</title>
+      <link>/tags/postgresql/</link>
+      <pubDate>Sat, 09 Nov 2019 19:01:09 +0530</pubDate>
+      
+      <guid>/tags/postgresql/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>python</title>
+      <link>/tags/python/</link>
+      <pubDate>Sat, 09 Nov 2019 19:01:09 +0530</pubDate>
+      
+      <guid>/tags/python/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>emojis</title>
+      <link>/tags/emojis/</link>
+      <pubDate>Sun, 05 Aug 2018 19:01:09 +0530</pubDate>
+      
+      <guid>/tags/emojis/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>encoding</title>
+      <link>/tags/encoding/</link>
+      <pubDate>Sun, 05 Aug 2018 19:01:09 +0530</pubDate>
+      
+      <guid>/tags/encoding/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>utf8mb4</title>
+      <link>/tags/utf8mb4/</link>
+      <pubDate>Sun, 05 Aug 2018 19:01:09 +0530</pubDate>
+      
+      <guid>/tags/utf8mb4/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>traceback</title>
+      <link>/tags/traceback/</link>
+      <pubDate>Sun, 13 Nov 2016 19:01:09 +0530</pubDate>
+      
+      <guid>/tags/traceback/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>
